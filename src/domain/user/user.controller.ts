@@ -8,9 +8,9 @@ import { ParamId } from "src/decorators/param-id.decorator";
 export class UserController {
 
     @Post()
-    async create(@Body() { email, name, password }: CreateUserDTO) {
+    async create(@Body() { email, nome, password }: CreateUserDTO) {
         return {
-            user: {  name, email, password}
+            user: {  nome, email, password}
         }
     }
 
@@ -25,15 +25,15 @@ export class UserController {
     }
 
     @Put(':id')
-    async update(@Body() { email, name, password }: UpdatePutUserDTO, @Param() params) {
+    async update(@Body() { email, nome, password }: UpdatePutUserDTO, @Param() params) {
         return {
-            user: { name, email, password},
+            user: { nome, email, password},
             params
         }
     }
 
     @Patch(':id')
-    async updatePartial(@Body() { name, email, password}: UpdatePatchUserDTO, @ParamId() id: number) {
+    async updatePartial(@Body() { nome, email, password}: UpdatePatchUserDTO, @ParamId() id: number) {
         return {
             user: { name, email, password},
             id
