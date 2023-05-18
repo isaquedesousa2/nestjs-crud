@@ -3,7 +3,7 @@ import { IsEmail, IsOptional, IsString, IsStrongPassword, IsDateString } from "c
 export class AuthRegisterDTO {
 
     @IsString()
-    name: string;
+    nome: string;
 
     @IsEmail()
     email: string;

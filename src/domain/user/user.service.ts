@@ -4,7 +4,6 @@ import { Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 import { CreateUserDTO } from "./dto/create-user.dto";
 import * as bcrypt from 'bcrypt';
-import { emit } from "process";
 import { UpdatePutUserDTO } from "./dto/update-put-user.dto";
 import { UpdatePatchUserDTO } from "./dto/update-patch-user.dto";
 
@@ -16,7 +15,7 @@ export class UserService {
 
     async existsUser(email: string){
         const existUser = await this.userRepository.exist({ where: { email }});
-
+        
         if(existUser){
             throw new BadRequestException('E-mail já cadastrado!')
         }
@@ -76,8 +75,8 @@ export class UserService {
         return this.userRepository.delete(id)
     }
 
-    async exists(id: number){
-        this.
-    }
+    // async exists(id: number){
+    //     this.
+    // }
 
 }

@@ -4,6 +4,7 @@ import { UpdatePutUserDTO } from "./dto/update-put-user.dto";
 import { UpdatePatchUserDTO } from "./dto/update-patch-user.dto";
 import { ParamId } from "src/decorators/param-id.decorator";
 import { UserService } from "./user.service";
+import { BadRequestException, Injectable } from "@nestjs/common";
 
 @Controller('users')
 export class UserController {
@@ -12,7 +13,11 @@ export class UserController {
 
     @Post()
     async create(@Body() data: CreateUserDTO) {
-        return this.userService.create(data)
+        try{
+            this.userService.create(data)
+        }catch(e){
+            throw new BadRequestException(e)
+        }
     }
 
     @Get()
