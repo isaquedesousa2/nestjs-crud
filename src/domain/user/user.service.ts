@@ -13,16 +13,17 @@ export class UserService {
 
     constructor(@InjectRepository(UserEntity) private userRepository: Repository<UserEntity>){}
 
-    async existsUser(email: string){
-        const existUser = await this.userRepository.exist({ where: { email }});
-        
-        if(existUser){
-            throw new BadRequestException('E-mail já cadastrado!')
-        }
+    async existsUser(email: string) {
+        const user = await this.userRepository.findOne({ where: { email }});
+        return !!user;
     }
 
     async create(data: CreateUserDTO){
-        this.existsUser(data.email)
+        const existUser = await this.existsUser(data.email)
+
+        if(existUser) {
+            throw new BadRequestException('E-mail já cadastrado!')
+        }
 
         const salt = await bcrypt.genSalt();
 

@@ -1,12 +1,9 @@
 import { IsJWT, IsStrongPassword } from "class-validator";
 
-export class AuthForgetDTO {
+export class AuthResetDTO {
 
     @IsStrongPassword()
-    passowrd: string;
-
-    @IsStrongPassword()
-    confirmPassowrd: string;
+    password: string;
 
     @IsJWT()
     token: string;

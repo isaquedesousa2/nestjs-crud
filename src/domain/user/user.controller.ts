@@ -13,11 +13,7 @@ export class UserController {
 
     @Post()
     async create(@Body() data: CreateUserDTO) {
-        try{
-            this.userService.create(data)
-        }catch(e){
-            throw new BadRequestException(e)
-        }
+        return this.userService.create(data)
     }
 
     @Get()
