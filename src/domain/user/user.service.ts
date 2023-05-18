@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { CreateUserDTO } from "./dto/create-user.dto";
 import * as bcrypt from 'bcrypt';
 import { emit } from "process";
+import { UpdatePutUserDTO } from "./dto/update-put-user.dto";
+import { UpdatePatchUserDTO } from "./dto/update-patch-user.dto";
 
 
 @Injectable()
@@ -37,7 +39,45 @@ export class UserService {
     }
 
     async show(id: number){
-        const user = await this.userRepository.findOne({where: { id }})
+        const user = await this.userRepository.findOne({ where: { id } })
         return user ? user : {}
     }
+
+    async update(id: number, { email, nome, password }: UpdatePutUserDTO){
+        const salt = await bcrypt.genSalt();
+        password = await bcrypt.hash(password, salt)
+
+        await this.userRepository.update(id, { email, nome, password })
+
+        return this.show(id)
+    }
+
+    async updatePartial(id: number, { email, nome, password }: UpdatePatchUserDTO){
+        const data: UpdatePatchUserDTO = {}
+
+        if(email){
+            data.email = email
+        }
+
+        if(nome){
+            data.nome = nome
+        }
+        
+        if(password){
+            const salt = await bcrypt.genSalt();
+            data.password = await bcrypt.hash(password, salt)
+        }
+
+        await this.userRepository.update(id, data)
+        return this.show(id)
+    }
+
+    async delete(id: number){
+        return this.userRepository.delete(id)
+    }
+
+    async exists(id: number){
+        this.
+    }
+
 }
