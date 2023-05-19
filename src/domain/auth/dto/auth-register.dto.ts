@@ -11,9 +11,6 @@ export class AuthRegisterDTO {
     @IsStrongPassword()
     password: string;
 
-    @IsStrongPassword()
-    confirmPassword: string;
-
     @IsOptional()
     @IsDateString()
     dateAt: string

@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Headers, Post } from "@nestjs/common";
 import { AuthLoginDTO } from "./dto/auth-login.dto";
 import { AuthRegisterDTO } from "./dto/auth-register.dto";
 import { AuthForgetDTO } from "./dto/auth-forget.dto";
@@ -18,7 +18,7 @@ export class AuthController {
 
     @Post('register')
     async register(@Body() data: AuthRegisterDTO){
-        return this.userService.create(data);
+        return this.authService.register(data);
     }
 
     @Post('forget')
@@ -29,6 +29,16 @@ export class AuthController {
     @Post('reset')
     async reset(@Body() { password, token }: AuthResetDTO){
         return this.authService.reset(password, token)
+    }
+
+    @Post('verify')
+    async verifyToken(@Headers('authorization') token){
+        return this.authService.verifyToken((token ?? '').split(' ')[1])
+    }
+
+    @Post('valid')
+    async isValidToken(@Body('token') token: string){
+        return this.authService.isValidToken(token)
     }
 
 }

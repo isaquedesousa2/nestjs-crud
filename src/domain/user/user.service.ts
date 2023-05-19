@@ -15,7 +15,7 @@ export class UserService {
 
     async existsUser(email: string) {
         const user = await this.userRepository.findOne({ where: { email }});
-        return !!user;
+        return user;
     }
 
     async create(data: CreateUserDTO){

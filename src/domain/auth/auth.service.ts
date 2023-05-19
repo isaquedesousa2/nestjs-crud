@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt"
 import { UserEntity } from "../user/entity/user.entity";
 import { Repository } from "typeorm";
@@ -6,24 +6,54 @@ import { InjectRepository } from "@nestjs/typeorm";
 import * as bcrypt from 'bcrypt';
 import { AuthLoginDTO } from "./dto/auth-login.dto";
 import { UpdatePatchUserDTO } from "../user/dto/update-patch-user.dto";
+import { AuthRegisterDTO } from "./dto/auth-register.dto";
+import { UserService } from "../user/user.service";
 
 
 @Injectable()
 export class AuthService {
 
-    constructor(private readonly JwtService: JwtService, @InjectRepository(UserEntity) private userRepository: Repository<UserEntity>){}
+    constructor(
+        private readonly JwtService: JwtService, 
+        @InjectRepository(UserEntity) private userRepository: Repository<UserEntity>,
+        private readonly userService: UserService
+        ){}
 
     async createToken(user: UserEntity) {
-        return this.JwtService.sign({}, { expiresIn: "7 days", subject: String(user.id), issuer: "API NestJS"});
+        const accessToken = this.JwtService.sign({}, { expiresIn: "20 seconds", subject: String(user.id), issuer: "API NestJS"});
+
+        return {
+            id: user.id,
+            name: user.nome,
+            email: user.email,
+            accessToken
+        } 
     }
 
-    async checkToken(token: string){
-        // return this.jwtService.verify()
+    async verifyToken(token: string){
+        try{
+            return this.JwtService.verify(token)
+        }catch (e){
+            throw new BadRequestException(e);
+        }
+    }
+
+    async isValidToken(token: string){
+        try{
+            this.JwtService.verify(token)
+            return true
+        }catch (e){
+            return false
+        }
     }
 
     async login({ email, password }: AuthLoginDTO){
-        
-        const user = await this.userRepository.findOne({ where: { email }})
+
+        const user = await this.userService.existsUser(email)
+
+        if(!user){
+            throw new UnauthorizedException('E-mail ou/e senha incorretos!')
+        }
 
         const isAuthenticated = await bcrypt.compare(password, user.password)
 
@@ -31,7 +61,15 @@ export class AuthService {
             throw new UnauthorizedException('E-mail ou/e senha incorretos!')
         }
 
-        return user
+        return this.createToken(user)
+
+    }
+
+    async register(data: AuthRegisterDTO){
+        
+        const user = await this.userService.create(data)
+
+        return this.createToken(user)
 
     }
 
