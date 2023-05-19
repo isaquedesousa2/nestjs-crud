@@ -20,7 +20,7 @@ export class AuthService {
         ){}
 
     async createToken(user: UserEntity) {
-        const accessToken = this.JwtService.sign({}, { expiresIn: "20 seconds", subject: String(user.id), issuer: "API NestJS"});
+        const accessToken = this.JwtService.sign({}, { expiresIn: "7 days", subject: String(user.id), issuer: "API NestJS"});
 
         return {
             id: user.id,
@@ -30,7 +30,7 @@ export class AuthService {
         } 
     }
 
-    async verifyToken(token: string){
+    verifyToken(token: string){
         try{
             return this.JwtService.verify(token)
         }catch (e){
@@ -38,7 +38,7 @@ export class AuthService {
         }
     }
 
-    async isValidToken(token: string){
+    isValidToken(token: string): boolean{
         try{
             this.JwtService.verify(token)
             return true

@@ -29,6 +29,15 @@ export class UserService {
 
         data.password = await bcrypt.hash(data.password, salt);
 
+        if (data.birthAt === undefined) {
+            data.birthAt = '1900-01-01';
+        }
+
+        if(data.role === undefined){
+            data.role = 1;
+        }
+        
+
         const user = this.userRepository.create(data)
 
         return this.userRepository.save(user)
@@ -43,16 +52,16 @@ export class UserService {
         return user ? user : {}
     }
 
-    async update(id: number, { email, nome, password }: UpdatePutUserDTO){
+    async update(id: number, data: UpdatePutUserDTO){
         const salt = await bcrypt.genSalt();
-        password = await bcrypt.hash(password, salt)
+        data.password = await bcrypt.hash(data.password, salt)
 
-        await this.userRepository.update(id, { email, nome, password })
+        await this.userRepository.update(id, data)
 
         return this.show(id)
     }
 
-    async updatePartial(id: number, { email, nome, password }: UpdatePatchUserDTO){
+    async updatePartial(id: number, { email, nome, password, birthAt, role }: UpdatePatchUserDTO){
         const data: UpdatePatchUserDTO = {}
 
         if(email){
@@ -66,6 +75,14 @@ export class UserService {
         if(password){
             const salt = await bcrypt.genSalt();
             data.password = await bcrypt.hash(password, salt)
+        }
+
+        if(role){
+            data.role = role
+        }
+
+        if(birthAt){
+            data.birthAt = birthAt
         }
 
         await this.userRepository.update(id, data)

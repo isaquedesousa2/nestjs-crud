@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './domain/user/user.module';
@@ -6,6 +6,7 @@ import { AuthModule } from './domain/auth/auth.module';
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserEntity } from './domain/user/entity/user.entity';
 import { ConfigModule } from "@nestjs/config";
+import { ThrottlerModule } from '@nestjs/throttler';
 
 
 
@@ -13,8 +14,9 @@ import { ConfigModule } from "@nestjs/config";
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    UserModule,
-    AuthModule,
+    ThrottlerModule.forRoot({ ttl: 60, limit: 10 }),
+    forwardRef(() => UserModule),
+    forwardRef(() => AuthModule),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.DB_HOST,
